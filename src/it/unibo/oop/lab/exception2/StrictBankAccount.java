@@ -34,43 +34,65 @@ public class StrictBankAccount implements BankAccount {
     /**
      * 
      * {@inheritDoc}
+     * 
+     * @throw  WrongAccountHolderException
      */
     public void deposit(final int usrID, final double amount) {
         if (checkUser(usrID)) {
             this.balance += amount;
             incTransactions();
+        } else {
+        	throw new WrongAccountHolderException();
         }
     }
 
     /**
      * 
      * {@inheritDoc}
+     * 
+     * @throw  WrongAccountHolderException
+     * 
+     * @throws NotEnoughFoundsException
      */
     public void withdraw(final int usrID, final double amount) {
-        if (checkUser(usrID) && isWithdrawAllowed(amount)) {
-            this.balance -= amount;
-            incTransactions();
+        if (checkUser(usrID)) {
+        	if(isWithdrawAllowed(amount)) {
+        		this.balance -= amount;
+        		incTransactions();
+        	} else {
+        		throw new NotEnoughFoundsException();
+        	}
+        } else {
+        	throw new WrongAccountHolderException();
         }
     }
 
     /**
      * 
      * {@inheritDoc}
+     * 
+     * @throws TransactionsOverQuotaException
      */
     public void depositFromATM(final int usrID, final double amount) {
         if (nTransactions < nMaxATMTransactions) {
             this.deposit(usrID, amount - StrictBankAccount.ATM_TRANSACTION_FEE);
             nTransactions++;
+        } else {
+        	throw new TransactionsOverQuotaException();
         }
     }
 
     /**
      * 
      * {@inheritDoc}
+     * 
+     * @throws TransactionsOverQuotaException
      */
     public void withdrawFromATM(final int usrID, final double amount) {
         if (nTransactions < nMaxATMTransactions) {
             this.withdraw(usrID, amount + StrictBankAccount.ATM_TRANSACTION_FEE);
+        } else {
+        	throw new TransactionsOverQuotaException();
         }
     }
 
@@ -108,7 +130,7 @@ public class StrictBankAccount implements BankAccount {
     }
 
     private boolean isWithdrawAllowed(final double amount) {
-        return balance > amount;
+        return balance >= amount;
     }
 
     private void incTransactions() {

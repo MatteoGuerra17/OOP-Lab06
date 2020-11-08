@@ -11,6 +11,8 @@ public interface BankAccount {
      *            id of the user requesting this operation
      * @param amount
      *            amount to be withdrawn
+     *            
+     * @throw WrongAccountHolderException
      */
     void withdraw(int usrID, double amount);
 
@@ -20,6 +22,8 @@ public interface BankAccount {
      *            id of the user requesting this operation
      * @param amount
      *            amount to be credited
+     *            
+     * @throw  WrongAccountHolderException
      */
     void deposit(int usrID, double amount);
 
